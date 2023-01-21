@@ -3,14 +3,17 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
-	"net/http"
-
-	"github.com/yosssi/gohtml"
+	"os"
+	"time"
 )
 
+var projectName int64 = time.Now().Unix()
+var projectPath string = fmt.Sprintf("downloads/%d", projectName)
+
 func main() {
-	urlFlag := flag.String("u", "", "URL of the web page")
+	// Create command line arguments
+	urlFlag := flag.String("U", "", "URL of the web page\nEx: html-source -U <url>")
+
 	flag.Parse()
 
 	if *urlFlag == "" {
@@ -18,14 +21,12 @@ func main() {
 		return
 	}
 
-	response, exception := http.Get(*urlFlag)
-	handle(exception)
+	// Create project directory
+	os.Mkdir(projectPath, 0755)
 
-	sourceBinary, exception := io.ReadAll(response.Body)
-	handle(exception)
+	// Download page
+	sourceBytes := downloadPage("index.html", *urlFlag)
 
-	sourceString := string(sourceBinary)
-	formattedSourceString := gohtml.Format(sourceString)
-
-	fmt.Println(formattedSourceString)
+	// Download assets
+	dowloadAssets(sourceBytes, *urlFlag)
 }

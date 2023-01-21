@@ -2,8 +2,9 @@ package main
 
 import "log"
 
-func handle(e error) {
-	if e != nil {
-		log.Fatal(e)
+func handle(exception error) {
+	// Exit if error throws
+	if exception != nil {
+		log.Fatal(exception)
 	}
 }
